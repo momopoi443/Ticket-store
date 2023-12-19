@@ -35,7 +35,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<String> refresh(
-            @RequestParam(name = "refreshToken")
+            @RequestBody
             @Pattern(regexp = "^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)")
             String refreshToken
     ) {
