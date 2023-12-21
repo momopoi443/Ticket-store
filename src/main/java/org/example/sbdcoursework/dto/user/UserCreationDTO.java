@@ -4,12 +4,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.example.sbdcoursework.entity.user.UserRole;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserCreationDTO {
 
     @NotBlank
@@ -28,4 +30,17 @@ public class UserCreationDTO {
 
     @NotNull
     private UserRole role;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserCreationDTO that)) return false;
+
+        return getEmail() != null ? getEmail().equals(that.getEmail()) : that.getEmail() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return getEmail() != null ? getEmail().hashCode() : 0;
+    }
 }
