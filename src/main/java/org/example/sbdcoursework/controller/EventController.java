@@ -78,15 +78,7 @@ public class EventController {
         List<EventDTO> fetchedEvents = eventService.listAllBy(
                 city, date, types, page
         );
-//        MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-//        multiValueMap.add("Access-Control-Allow-Origin", "*");
 
-
-//        return new ResponseEntity<List<EventDTO>>(
-//                fetchedEvents,
-//                multiValueMap,
-//                HttpStatus.OK
-//        );
         return ResponseEntity.ok(fetchedEvents);
     }
 }

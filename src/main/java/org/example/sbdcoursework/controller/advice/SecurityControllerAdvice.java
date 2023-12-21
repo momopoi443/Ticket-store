@@ -5,11 +5,13 @@ import org.example.sbdcoursework.exception.InvalidTokenException;
 import org.example.sbdcoursework.exception.InvalidUserCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class AuthControllerAdvice {
+public class SecurityControllerAdvice {
 
     @ExceptionHandler(value = {
             InvalidTokenException.class
@@ -33,6 +35,34 @@ public class AuthControllerAdvice {
     ) {
         ApiErrorDTO errorInfo = ApiErrorDTO.builder()
                 .code(InvalidUserCredentialsException.errorCode())
+                .description(exception.getMessage())
+                .build();
+
+        return new ResponseEntity<>(errorInfo, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(value = {
+            AccessDeniedException.class
+    })
+    public ResponseEntity<ApiErrorDTO> handleAccessDeniedException(
+            AccessDeniedException exception
+    ) {
+        ApiErrorDTO errorInfo = ApiErrorDTO.builder()
+                .code("access.denied")
+                .description(exception.getMessage())
+                .build();
+
+        return new ResponseEntity<>(errorInfo, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(value = {
+            AuthenticationException.class
+    })
+    public ResponseEntity<ApiErrorDTO> handleAccessDeniedException(
+            AuthenticationException exception
+    ) {
+        ApiErrorDTO errorInfo = ApiErrorDTO.builder()
+                .code("authentication.failed")
                 .description(exception.getMessage())
                 .build();
 
