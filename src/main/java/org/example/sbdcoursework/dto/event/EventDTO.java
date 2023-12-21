@@ -16,25 +16,25 @@ import java.util.UUID;
 @NoArgsConstructor
 public class EventDTO {
 
-    UUID uuid;
+    private UUID uuid;
 
-    String name;
+    private String name;
 
-    EventType type;
+    private EventType type;
 
-    String city;
+    private String city;
 
-    String cityAddress;
+    private String cityAddress;
 
-    String description;
+    private String description;
 
-    String imageName;
+    private String imageName;
 
-    LocalDateTime date;
+    private LocalDateTime date;
 
-    BigDecimal ticketPrice;
+    private BigDecimal ticketPrice;
 
-    Long availableTicketAmount;
+    private Long availableTicketAmount;
 
     @Override
     public boolean equals(Object o) {

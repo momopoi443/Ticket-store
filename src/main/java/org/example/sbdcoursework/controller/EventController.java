@@ -69,6 +69,8 @@ public class EventController {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             Optional<LocalDate> date,
+            @RequestParam(required = false)
+            Optional<java.util.UUID> organizerId,
             @RequestParam
             List<EventType> types,
             @RequestParam
@@ -76,7 +78,7 @@ public class EventController {
             Long page
     ) {
         List<EventDTO> fetchedEvents = eventService.listAllBy(
-                city, date, types, page
+                city, date, types, page, organizerId
         );
 
         return ResponseEntity.ok(fetchedEvents);

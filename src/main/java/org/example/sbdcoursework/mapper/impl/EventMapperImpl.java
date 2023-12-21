@@ -6,6 +6,8 @@ import org.example.sbdcoursework.entity.event.Event;
 import org.example.sbdcoursework.mapper.EventMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class EventMapperImpl implements EventMapper {
 
@@ -16,6 +18,9 @@ public class EventMapperImpl implements EventMapper {
         event.setType(dto.getType());
         event.setCityAddress(dto.getCityAddress());
         event.setDescription(dto.getDescription());
+        event.setOrganizerId(
+                UUID.fromString(dto.getOrganizerId())
+        );
         event.setImageName(dto.getImageName());
         event.setDate(dto.getDate());
         event.setTicketPrice(dto.getTicketPrice());

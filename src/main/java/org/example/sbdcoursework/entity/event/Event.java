@@ -40,6 +40,9 @@ public class Event {
     @Column(name = "description", nullable = false, length = 300)
     private String description;
 
+    @Column(name = "organizerId", nullable = false)
+    private UUID organizerId;
+
     @Column(name = "imageName", nullable = false)
     private String imageName;
 

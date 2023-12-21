@@ -12,7 +12,7 @@ import org.example.sbdcoursework.dto.user.UserDTO;
 @AllArgsConstructor
 public class LoginResponsePayload {
 
-    UserDTO userDTO;
+    private UserDTO userDTO;
 
-    TokenPair tokenPair;
+    private TokenPair tokenPair;
 }

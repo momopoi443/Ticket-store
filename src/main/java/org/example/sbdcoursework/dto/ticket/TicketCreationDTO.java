@@ -14,16 +14,16 @@ import org.hibernate.validator.constraints.UUID;
 public class TicketCreationDTO {
 
     @NotBlank
-    String userFirstName;
+    private String userFirstName;
 
     @NotBlank
-    String userLastName;
+    private String userLastName;
 
     @NotNull
     @Email(regexp = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-    String userEmail;
+    private String userEmail;
 
     @NotNull
     @UUID
-    String eventUuid;
+    private String eventUuid;
 }

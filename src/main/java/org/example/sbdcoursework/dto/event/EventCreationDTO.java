@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.example.sbdcoursework.entity.event.EventType;
+import org.hibernate.validator.constraints.UUID;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,23 +17,27 @@ import java.time.LocalDateTime;
 public class EventCreationDTO {
 
     @NotBlank
-    String name;
+    private String name;
 
     @NotNull
-    EventType type;
+    private EventType type;
 
     @NotNull
     @Pattern(regexp = "^[a-zA-Z]+(?:[\\s-][a-zA-Z]+)*$")
-    String city;
+    private String city;
 
     @NotBlank
-    String cityAddress;
+    private String cityAddress;
 
     @NotBlank
-    String description;
+    private String description;
+
+    @NotNull
+    @UUID
+    private String organizerId;
 
     @NotBlank
-    String imageName;
+    private String imageName;
 
     @NotNull
     @Future
@@ -40,15 +45,15 @@ public class EventCreationDTO {
             shape = JsonFormat.Shape.STRING,
             pattern = "yyyy-MM-dd'T'HH:mm"
     )
-    LocalDateTime date;
+    private LocalDateTime date;
 
     @NotNull
     @Positive
-    BigDecimal ticketPrice;
+    private BigDecimal ticketPrice;
 
     @NotNull
     @Positive
-    Long maxTicketAmount;
+    private Long maxTicketAmount;
 
     @Override
     public boolean equals(Object o) {

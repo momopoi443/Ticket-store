@@ -37,6 +37,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final TicketRepository ticketRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UUID create(EventCreationDTO creationDTO) {
@@ -44,6 +45,15 @@ public class EventServiceImpl implements EventService {
             logAndThrowException(
                     new InvalidArgumentException(
                             "Invalid name: given name is already taken"
+                    )
+            );
+        }
+        if (!userRepository.existsByUuid(
+                UUID.fromString(creationDTO.getOrganizerId())
+        )) {
+            logAndThrowException(
+                    new InvalidArgumentException(
+                            "Invalid organizer id: no such organizers"
                     )
             );
         }
@@ -92,10 +102,13 @@ public class EventServiceImpl implements EventService {
             Optional<String> city,
             Optional<LocalDate> date,
             List<EventType> types,
-            Long pageNumber
+            Long pageNumber,
+            Optional<UUID> organizerId
     ) {
         Pageable pageable = PageRequest.of(pageNumber.intValue(), EVENT_PAGE_SIZE);
-        Specification<Event> specification = createEventSpecification(city, date, types);
+        Specification<Event> specification = createEventSpecification(
+                city, date, types, organizerId
+        );
 
         Page<Event> eventsPage = eventRepository.findAll(specification, pageable);
 
@@ -127,7 +140,8 @@ public class EventServiceImpl implements EventService {
     private Specification<Event> createEventSpecification(
             Optional<String> city,
             Optional<LocalDate> date,
-            List<EventType> types
+            List<EventType> types,
+            Optional<UUID> organizerId
     ) {
         AtomicReference<Specification<Event>> specification =
                 new AtomicReference<>(Specification.where(null));
@@ -143,6 +157,9 @@ public class EventServiceImpl implements EventService {
                     specification.get().and(EventSpecifications.hasTypes(types))
             );
         }
+        organizerId.ifPresent(o -> specification.set(
+                specification.get().and(EventSpecifications.hasOrganizerId(o))
+        ));
 
         return specification.get();
     }

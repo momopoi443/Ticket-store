@@ -21,6 +21,7 @@ public interface EventService {
             Optional<String> city,
             Optional<LocalDate> date,
             List<EventType> types,
-            Long pageNumber
+            Long pageNumber,
+            Optional<UUID> organizerId
     );
 }
