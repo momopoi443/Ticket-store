@@ -67,7 +67,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void createTicket_ShouldValidateCreationData() throws Exception {
+    public void createUser_ShouldValidateCreationData() throws Exception {
         ResultActions response = mockMvc.perform(
                 post(UserController.USER_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,7 +84,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void createEvent_ShouldReturnCreatedUserUUIDAndCreatedStatus() throws Exception {
+    public void createUser_ShouldReturnCreatedUserUUIDAndCreatedStatus() throws Exception {
         UUID retunedUuid = UUID.randomUUID();
 
         when(userService.register(any()))

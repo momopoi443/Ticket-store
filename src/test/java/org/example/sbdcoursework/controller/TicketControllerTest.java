@@ -88,7 +88,7 @@ class TicketControllerTest {
     }
 
     @Test
-    public void createEvent_ShouldReturnCreatedTicketUUIDAndCreatedStatus() throws Exception {
+    public void createTicket_ShouldReturnCreatedTicketUUIDAndCreatedStatus() throws Exception {
         UUID retunedUuid = UUID.randomUUID();
 
         when(ticketService.create(any()))
