@@ -42,7 +42,7 @@ public class EventMapperImpl implements EventMapper {
                 event.getCity(),
                 event.getCityAddress(),
                 event.getDescription(),
-                ServletUriComponentsBuilder.fromCurrentContextPath() + EventController.EVENT_IMAGE_PATH + event.getImageFilename(),
+                ServletUriComponentsBuilder.fromCurrentContextPath().toUriString() + EventController.EVENT_IMAGE_PATH + "/" + event.getImageFilename(),
                 event.getDate(),
                 event.getTicketPrice(),
                 event.getMaxTicketAmount() - (soldTickets == null ? 0: soldTickets)

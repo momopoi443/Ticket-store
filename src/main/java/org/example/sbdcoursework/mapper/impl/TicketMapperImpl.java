@@ -38,7 +38,7 @@ public class TicketMapperImpl implements TicketMapper {
                 event.getDate(),
                 event.getCity(),
                 event.getCityAddress(),
-                ServletUriComponentsBuilder.fromCurrentContextPath() + EventController.EVENT_IMAGE_PATH + event.getImageFilename(),
+                ServletUriComponentsBuilder.fromCurrentContextPath().toUriString() + EventController.EVENT_IMAGE_PATH + "/" + event.getImageFilename(),
                 ticket.getCreatedAt()
         );
     }
