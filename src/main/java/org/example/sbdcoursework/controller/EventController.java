@@ -32,7 +32,7 @@ public class EventController {
 
     public static final String EVENT_PATH = "/api/event";
     public static final String EVENT_ID_PATH_VAR = "/{eventId}";
-    public static final String EVENT_IMAGE_PATH = EVENT_PATH + "/image";
+    public static final String EVENT_IMAGE_PATH = "/image";
 
     private final EventService eventService;
     private final EventImageService eventImageService;

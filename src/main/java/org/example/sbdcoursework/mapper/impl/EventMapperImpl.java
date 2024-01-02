@@ -1,6 +1,5 @@
 package org.example.sbdcoursework.mapper.impl;
 
-import org.example.sbdcoursework.controller.EventController;
 import org.example.sbdcoursework.dto.event.EventCreationDTO;
 import org.example.sbdcoursework.dto.event.EventDTO;
 import org.example.sbdcoursework.entity.event.Event;
@@ -9,6 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.UUID;
+
+import static org.example.sbdcoursework.controller.EventController.EVENT_IMAGE_PATH;
+import static org.example.sbdcoursework.controller.EventController.EVENT_PATH;
 
 @Component
 public class EventMapperImpl implements EventMapper {
@@ -42,7 +44,7 @@ public class EventMapperImpl implements EventMapper {
                 event.getCity(),
                 event.getCityAddress(),
                 event.getDescription(),
-                ServletUriComponentsBuilder.fromCurrentContextPath().toUriString() + EventController.EVENT_IMAGE_PATH + "/" + event.getImageFilename(),
+                ServletUriComponentsBuilder.fromCurrentContextPath().toUriString() + EVENT_PATH + EVENT_IMAGE_PATH + "/" + event.getImageFilename(),
                 event.getDate(),
                 event.getTicketPrice(),
                 event.getMaxTicketAmount() - (soldTickets == null ? 0: soldTickets)
