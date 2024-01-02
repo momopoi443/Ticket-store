@@ -6,13 +6,7 @@ import org.example.sbdcoursework.entity.event.Event;
 
 public interface EventMapper {
 
-    void mapEventCreationDTOToEvent(
-            EventCreationDTO dto,
-            Event event
-    );
+    void mapEventCreationDTOToEvent(EventCreationDTO dto, String imageFilename, Event event);
 
-    EventDTO mapEventToEventDTO(
-            Event event,
-            Long soldTickets
-    );
+    EventDTO mapEventToEventDTO(Event event, Long soldTickets);
 }

@@ -1,11 +1,13 @@
 package org.example.sbdcoursework.mapper.impl;
 
+import org.example.sbdcoursework.controller.EventController;
 import org.example.sbdcoursework.dto.ticket.TicketCreationDTO;
 import org.example.sbdcoursework.dto.ticket.TicketDTO;
 import org.example.sbdcoursework.entity.event.Event;
 import org.example.sbdcoursework.entity.Ticket;
 import org.example.sbdcoursework.mapper.TicketMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -36,7 +38,7 @@ public class TicketMapperImpl implements TicketMapper {
                 event.getDate(),
                 event.getCity(),
                 event.getCityAddress(),
-                event.getImageName(),
+                ServletUriComponentsBuilder.fromCurrentContextPath() + EventController.EVENT_IMAGE_PATH + event.getImageFilename(),
                 ticket.getCreatedAt()
         );
     }

@@ -7,10 +7,12 @@ import org.example.sbdcoursework.dto.event.EventCreationDTO;
 import org.example.sbdcoursework.dto.event.EventDTO;
 import org.example.sbdcoursework.entity.event.Event;
 import org.example.sbdcoursework.entity.event.EventType;
+import org.example.sbdcoursework.exception.InternalEventStorageException;
 import org.example.sbdcoursework.exception.InvalidArgumentException;
 import org.example.sbdcoursework.exception.NotFoundException;
 import org.example.sbdcoursework.mapper.EventMapper;
 import org.example.sbdcoursework.repository.*;
+import org.example.sbdcoursework.service.EventImageService;
 import org.example.sbdcoursework.service.EventService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,35 +38,40 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
+    private final EventImageService eventImageService;
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
 
     @Override
     public UUID create(EventCreationDTO creationDTO) {
         if (eventRepository.existsByName(creationDTO.getName())) {
-            logAndThrowException(
-                    new InvalidArgumentException(
-                            "Invalid name: given name is already taken"
-                    )
-            );
+            throw new InvalidArgumentException("Invalid name: given name is already taken");
         }
-        if (!userRepository.existsByUuid(
-                UUID.fromString(creationDTO.getOrganizerId())
-        )) {
-            logAndThrowException(
-                    new InvalidArgumentException(
-                            "Invalid organizer id: no such organizers"
-                    )
-            );
+        if (!userRepository.existsByUuid(UUID.fromString(creationDTO.getOrganizerId()))) {
+            throw new InvalidArgumentException("Invalid organizer id: no such organizers");
+        }
+        if (creationDTO.getImage().isEmpty()) {
+            throw new InvalidArgumentException("Can't store empty file");
         }
 
         Event eventToSave = new Event(UUID.randomUUID());
+        String savedImageFilename = eventImageService.store(
+                eventToSave.getUuid(),
+                creationDTO.getImage()
+        );
         eventMapper.mapEventCreationDTOToEvent(
                 creationDTO,
+                savedImageFilename,
                 eventToSave
         );
 
-        Event savedEvent = eventRepository.save(eventToSave);
+        Event savedEvent;
+        try {
+            savedEvent = eventRepository.save(eventToSave);
+        } catch (Exception e) {
+            eventImageService.delete(savedImageFilename);
+            throw new InternalEventStorageException(e);
+        }
         log.info("Event: " + savedEvent.getUuid() + " created");
 
         return savedEvent.getUuid();
@@ -72,21 +79,14 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDTO getById(UUID eventUuid) {
-        AtomicReference<EventDTO> eventDTO = new AtomicReference<>(new EventDTO());
+        Event foundEvent = eventRepository
+                .findByUuid(eventUuid)
+                .orElseThrow(() -> new NotFoundException("No such events found"));
 
-        eventRepository.findByUuid(eventUuid).ifPresentOrElse(
-                foundEvent -> eventDTO.set(
-                        eventMapper.mapEventToEventDTO(
-                                foundEvent,
-                                ticketRepository.countSoldTicketsByEventUuid(eventUuid)
-                        )
-                ),
-                () -> logAndThrowException(
-                        new NotFoundException("No such events found")
-                )
+        return eventMapper.mapEventToEventDTO(
+                foundEvent,
+                ticketRepository.countSoldTicketsByEventUuid(eventUuid)
         );
-
-        return eventDTO.get();
     }
 
     @Override
@@ -122,11 +122,6 @@ public class EventServiceImpl implements EventService {
                         soldTicketsPerEvent.get(event.getUuid())
                 ))
                 .toList();
-    }
-
-    private void logAndThrowException(RuntimeException exception) {
-        log.error(exception.getMessage(), exception);
-        throw exception;
     }
 
     private Map<UUID, Long> mapSoldTicketsPerEventViewToMap(List<SoldTicketsPerEventView> view) {

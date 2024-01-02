@@ -1,4 +1,4 @@
-package org.example.sbdcoursework.config;
+package org.example.sbdcoursework.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.example.sbdcoursework.filter.JwtAuthenticationFilter;

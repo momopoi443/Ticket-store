@@ -28,7 +28,7 @@ public class EventDTO {
 
     private String description;
 
-    private String imageName;
+    private String imageUrl;
 
     private LocalDateTime date;
 

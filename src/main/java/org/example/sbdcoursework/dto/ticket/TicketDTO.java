@@ -32,7 +32,7 @@ public class TicketDTO {
 
     private String eventCityAddress;
 
-    private String eventImageName;
+    private String eventImageUrl;
 
     private LocalDateTime createdAt;
 

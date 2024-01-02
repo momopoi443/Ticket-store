@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import org.example.sbdcoursework.entity.event.EventType;
 import org.hibernate.validator.constraints.UUID;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -36,8 +37,8 @@ public class EventCreationDTO {
     @UUID
     private String organizerId;
 
-    @NotBlank
-    private String imageName;
+    @NotNull
+    private MultipartFile image;
 
     @NotNull
     @Future

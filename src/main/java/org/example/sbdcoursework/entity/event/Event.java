@@ -44,7 +44,7 @@ public class Event {
     private UUID organizerId;
 
     @Column(name = "imageName", nullable = false)
-    private String imageName;
+    private String imageFilename;
 
     @Column(name = "date", nullable = false)
     private LocalDateTime date;
