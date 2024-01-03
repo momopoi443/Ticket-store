@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 //TODO write validation messages
-//TODO decide if image for Event needed for now
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class SbdCourseWorkApplication {

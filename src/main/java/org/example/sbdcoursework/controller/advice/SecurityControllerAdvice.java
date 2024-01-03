@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class SecurityControllerAdvice {
 
-    @ExceptionHandler(value = {
-            InvalidTokenException.class
-    })
+    @ExceptionHandler({InvalidTokenException.class})
     public ResponseEntity<ApiErrorDTO> handleInvalidToken(
             InvalidTokenException exception
     ) {
@@ -27,9 +25,7 @@ public class SecurityControllerAdvice {
         return new ResponseEntity<>(errorInfo, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(value = {
-            InvalidUserCredentialsException.class
-    })
+    @ExceptionHandler({InvalidUserCredentialsException.class})
     public ResponseEntity<ApiErrorDTO> handleInvalidUserCredentials(
             InvalidUserCredentialsException exception
     ) {
@@ -41,9 +37,7 @@ public class SecurityControllerAdvice {
         return new ResponseEntity<>(errorInfo, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(value = {
-            AccessDeniedException.class
-    })
+    @ExceptionHandler({AccessDeniedException.class})
     public ResponseEntity<ApiErrorDTO> handleAccessDeniedException(
             AccessDeniedException exception
     ) {
@@ -55,9 +49,7 @@ public class SecurityControllerAdvice {
         return new ResponseEntity<>(errorInfo, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(value = {
-            AuthenticationException.class
-    })
+    @ExceptionHandler({AuthenticationException.class})
     public ResponseEntity<ApiErrorDTO> handleAccessDeniedException(
             AuthenticationException exception
     ) {

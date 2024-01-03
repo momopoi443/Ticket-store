@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 public class InputValidationControllerAdvice {
 
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<List<ApiErrorDTO>> handleMethodArgumentNotValid(
             MethodArgumentNotValidException exception
     ) {
@@ -32,7 +32,7 @@ public class InputValidationControllerAdvice {
         return new ResponseEntity<>(errorInfos, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {ConstraintViolationException.class})
+    @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<ApiErrorDTO> handleConstraintViolationException(
             ConstraintViolationException exception
     ) {
