@@ -1,7 +1,7 @@
 package org.example.sbdcoursework.mapper.impl;
 
-import org.example.sbdcoursework.dto.ticket.TicketCreationDTO;
-import org.example.sbdcoursework.dto.ticket.TicketDTO;
+import org.example.sbdcoursework.dto.ticket.TicketCreationDto;
+import org.example.sbdcoursework.dto.ticket.TicketDto;
 import org.example.sbdcoursework.entity.event.Event;
 import org.example.sbdcoursework.entity.Ticket;
 import org.example.sbdcoursework.mapper.TicketMapper;
@@ -11,26 +11,25 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static org.example.sbdcoursework.controller.EventController.EVENT_IMAGE_PATH;
-import static org.example.sbdcoursework.controller.EventController.EVENT_PATH;
-
 @Component
 public class TicketMapperImpl implements TicketMapper {
 
     @Override
-    public void mapTicketCreationDTOToTicket(TicketCreationDTO creationDTO, Ticket ticket) {
+    public Ticket mapTicketCreationDTOToTicket(TicketCreationDto creationDTO, UUID ownerUuid) {
+        Ticket ticket = new Ticket(UUID.randomUUID());
         ticket.setUserFirstName(creationDTO.getUserFirstName());
         ticket.setUserLastName(creationDTO.getUserLastName());
+        ticket.setUserUuid(ownerUuid);
         ticket.setUserEmail(creationDTO.getUserEmail());
-        ticket.setEventUuid(
-                UUID.fromString(creationDTO.getEventUuid())
-        );
-        ticket.setCreatedAt(LocalDateTime.now().withSecond(0).withNano(0));
+        ticket.setEventUuid(UUID.fromString(creationDTO.getEventUuid()));
+        ticket.setCreatedAt(LocalDateTime.now().withNano(0));
+
+        return ticket;
     }
 
     @Override
-    public TicketDTO mapTicketAndEventToTicketDTO(Ticket ticket, Event event) {
-        return new TicketDTO(
+    public TicketDto mapTicketAndEventToTicketDTO(Ticket ticket, Event event) {
+        return new TicketDto(
                 ticket.getUuid(),
                 ticket.getUserUuid(),
                 ticket.getUserFirstName(),
@@ -40,7 +39,10 @@ public class TicketMapperImpl implements TicketMapper {
                 event.getDate(),
                 event.getCity(),
                 event.getCityAddress(),
-                ServletUriComponentsBuilder.fromCurrentContextPath().toUriString() + EVENT_PATH + EVENT_IMAGE_PATH + "/" + event.getImageFilename(),
+                ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path("/api/event/image/{imageFilename}")
+                        .build(event.getImageFilename())
+                        .getRawPath(),
                 ticket.getCreatedAt()
         );
     }

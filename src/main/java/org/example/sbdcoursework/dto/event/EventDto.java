@@ -14,7 +14,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventDTO {
+public class EventDto {
 
     private UUID uuid;
 
@@ -36,10 +36,12 @@ public class EventDTO {
 
     private Long availableTicketAmount;
 
+    private Boolean isConfirmed;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof EventDTO eventDTO)) return false;
+        if (!(o instanceof EventDto eventDTO)) return false;
 
         return getUuid().equals(eventDTO.getUuid());
     }

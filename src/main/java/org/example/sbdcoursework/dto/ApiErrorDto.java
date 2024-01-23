@@ -9,7 +9,7 @@ import lombok.Setter;
 @Builder
 @Setter
 @Getter
-public class ApiErrorDTO {
+public class ApiErrorDto {
 
     private String code;
 

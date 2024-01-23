@@ -1,8 +1,8 @@
 package org.example.sbdcoursework.controller.advice;
 
-import org.example.sbdcoursework.dto.ApiErrorDTO;
-import org.example.sbdcoursework.exception.InvalidTokenException;
-import org.example.sbdcoursework.exception.InvalidUserCredentialsException;
+import org.example.sbdcoursework.dto.ApiErrorDto;
+import org.example.sbdcoursework.exception.external.InvalidTokenException;
+import org.example.sbdcoursework.exception.external.InvalidUserCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -13,51 +13,43 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class SecurityControllerAdvice {
 
-    @ExceptionHandler({InvalidTokenException.class})
-    public ResponseEntity<ApiErrorDTO> handleInvalidToken(
-            InvalidTokenException exception
-    ) {
-        ApiErrorDTO errorInfo = ApiErrorDTO.builder()
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiErrorDto> handleInvalidToken(InvalidTokenException exception) {
+        ApiErrorDto apiErrorDto = ApiErrorDto.builder()
                 .code(InvalidTokenException.errorCode())
                 .description(exception.getMessage())
                 .build();
 
-        return new ResponseEntity<>(errorInfo, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(apiErrorDto, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({InvalidUserCredentialsException.class})
-    public ResponseEntity<ApiErrorDTO> handleInvalidUserCredentials(
-            InvalidUserCredentialsException exception
-    ) {
-        ApiErrorDTO errorInfo = ApiErrorDTO.builder()
+    @ExceptionHandler(InvalidUserCredentialsException.class)
+    public ResponseEntity<ApiErrorDto> handleInvalidUserCredentials(InvalidUserCredentialsException exception) {
+        ApiErrorDto apiErrorDto = ApiErrorDto.builder()
                 .code(InvalidUserCredentialsException.errorCode())
                 .description(exception.getMessage())
                 .build();
 
-        return new ResponseEntity<>(errorInfo, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(apiErrorDto, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({AccessDeniedException.class})
-    public ResponseEntity<ApiErrorDTO> handleAccessDeniedException(
-            AccessDeniedException exception
-    ) {
-        ApiErrorDTO errorInfo = ApiErrorDTO.builder()
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorDto> handleAccessDenied(AccessDeniedException exception) {
+        ApiErrorDto apiErrorDto = ApiErrorDto.builder()
                 .code("access.denied")
                 .description(exception.getMessage())
                 .build();
 
-        return new ResponseEntity<>(errorInfo, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(apiErrorDto, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler({AuthenticationException.class})
-    public ResponseEntity<ApiErrorDTO> handleAccessDeniedException(
-            AuthenticationException exception
-    ) {
-        ApiErrorDTO errorInfo = ApiErrorDTO.builder()
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiErrorDto> handleAuthException(AuthenticationException exception) {
+        ApiErrorDto apiErrorDto = ApiErrorDto.builder()
                 .code("authentication.failed")
-                .description(exception.getMessage())
+                .description("Valid token required")
                 .build();
 
-        return new ResponseEntity<>(errorInfo, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(apiErrorDto, HttpStatus.UNAUTHORIZED);
     }
 }

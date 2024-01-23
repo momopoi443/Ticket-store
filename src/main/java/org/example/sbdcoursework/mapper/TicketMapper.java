@@ -1,19 +1,15 @@
 package org.example.sbdcoursework.mapper;
 
-import org.example.sbdcoursework.dto.ticket.TicketCreationDTO;
-import org.example.sbdcoursework.dto.ticket.TicketDTO;
+import org.example.sbdcoursework.dto.ticket.TicketCreationDto;
+import org.example.sbdcoursework.dto.ticket.TicketDto;
 import org.example.sbdcoursework.entity.event.Event;
 import org.example.sbdcoursework.entity.Ticket;
 
+import java.util.UUID;
+
 public interface TicketMapper {
 
-    void mapTicketCreationDTOToTicket(
-            TicketCreationDTO creationDTO,
-            Ticket ticket
-    );
+    Ticket mapTicketCreationDTOToTicket(TicketCreationDto creationDTO, UUID ownerUuid);
 
-    TicketDTO mapTicketAndEventToTicketDTO(
-            Ticket ticket,
-            Event event
-    );
+    TicketDto mapTicketAndEventToTicketDTO(Ticket ticket, Event event);
 }

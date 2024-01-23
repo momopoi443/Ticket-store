@@ -1,12 +1,16 @@
 package org.example.sbdcoursework.mapper;
 
-import org.example.sbdcoursework.dto.event.EventCreationDTO;
-import org.example.sbdcoursework.dto.event.EventDTO;
+import org.example.sbdcoursework.dto.event.EventCreationDto;
+import org.example.sbdcoursework.dto.event.EventDto;
 import org.example.sbdcoursework.entity.event.Event;
+
+import java.util.List;
 
 public interface EventMapper {
 
-    void mapEventCreationDTOToEvent(EventCreationDTO dto, String imageFilename, Event event);
+    void mapEventCreationDtoToEvent(EventCreationDto dto, String imageFilename, Event event);
 
-    EventDTO mapEventToEventDTO(Event event, Long soldTickets);
+    EventDto mapEventToEventDto(Event event);
+
+    List<EventDto> mapEventsToEventDtos(List<Event> events);
 }

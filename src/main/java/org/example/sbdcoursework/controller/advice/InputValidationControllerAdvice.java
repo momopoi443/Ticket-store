@@ -2,8 +2,8 @@ package org.example.sbdcoursework.controller.advice;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.example.sbdcoursework.dto.ApiErrorDTO;
-import org.example.sbdcoursework.exception.InvalidArgumentException;
+import org.example.sbdcoursework.dto.ApiErrorDto;
+import org.example.sbdcoursework.exception.external.InvalidArgumentException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,33 +16,25 @@ import java.util.List;
 @Slf4j
 public class InputValidationControllerAdvice {
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ResponseEntity<List<ApiErrorDTO>> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException exception
-    ) {
-        log.error(exception.getMessage(), exception);
-
-        List<ApiErrorDTO> errorInfos = exception.getFieldErrors().stream()
-                .map(error -> new ApiErrorDTO(
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<List<ApiErrorDto>> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
+        List<ApiErrorDto> apiErrorDtos = exception.getFieldErrors().stream()
+                .map(error -> new ApiErrorDto(
                         InvalidArgumentException.errorCode(),
                         error.getField() + ": " + error.getDefaultMessage()
                 ))
                 .toList();
 
-        return new ResponseEntity<>(errorInfos, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiErrorDtos, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ConstraintViolationException.class})
-    public ResponseEntity<ApiErrorDTO> handleConstraintViolationException(
-            ConstraintViolationException exception
-    ) {
-        log.error(exception.getMessage(), exception);
-
-        ApiErrorDTO errorInfo = ApiErrorDTO.builder()
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiErrorDto> handleConstraintViolation(ConstraintViolationException exception) {
+        ApiErrorDto apiErrorDto = ApiErrorDto.builder()
                 .code(InvalidArgumentException.errorCode())
-                .description(exception.getMessage())
+                .description(exception.getConstraintViolations().iterator().next().getMessage())
                 .build();
 
-        return new ResponseEntity<>(errorInfo, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiErrorDto, HttpStatus.BAD_REQUEST);
     }
 }

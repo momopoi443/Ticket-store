@@ -3,12 +3,13 @@ package org.example.sbdcoursework.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.sbdcoursework.dto.ticket.TicketCreationDTO;
-import org.example.sbdcoursework.dto.ticket.TicketDTO;
+import org.example.sbdcoursework.dto.ticket.TicketCreationDto;
+import org.example.sbdcoursework.dto.ticket.TicketDto;
 import org.example.sbdcoursework.entity.event.Event;
 import org.example.sbdcoursework.entity.Ticket;
-import org.example.sbdcoursework.exception.InvalidArgumentException;
-import org.example.sbdcoursework.exception.NotFoundException;
+import org.example.sbdcoursework.exception.external.InvalidArgumentException;
+import org.example.sbdcoursework.exception.external.NotFoundException;
+import org.example.sbdcoursework.exception.internal.InternalTicketStorageException;
 import org.example.sbdcoursework.mapper.TicketMapper;
 import org.example.sbdcoursework.repository.EventRepository;
 import org.example.sbdcoursework.repository.TicketRepository;
@@ -16,11 +17,8 @@ import org.example.sbdcoursework.repository.UserRepository;
 import org.example.sbdcoursework.service.TicketService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,74 +32,25 @@ public class TicketServiceImpl implements TicketService {
     private final UserRepository userRepository;
 
     @Override
-    public UUID create(TicketCreationDTO creationDTO) {
-        if (!eventRepository.existsByUuid(
-                UUID.fromString(creationDTO.getEventUuid())
-        )) {
-            logAndThrowException(
-                    new InvalidArgumentException("Invalid event uuid: no events with such uuid")
-            );
+    public UUID create(TicketCreationDto creationDTO) {
+        if (!eventRepository.existsByUuid(UUID.fromString(creationDTO.getEventUuid()))) {
+            throw  new InvalidArgumentException("Invalid event uuid: no events with such uuid");
         }
+        AtomicReference<UUID> ownerUuid = new AtomicReference<>(null);
+        userRepository.findByEmail(creationDTO.getUserEmail()).ifPresent(user -> ownerUuid.set(user.getUuid()));
 
-        Ticket ticketToSave = new Ticket(UUID.randomUUID());
-
-        userRepository.findByEmail(creationDTO.getUserEmail()).ifPresent(
-                //TODO check that supplied first and last name equals found
-                user -> ticketToSave.setUserUuid(user.getUuid())
-        );
-        ticketMapper.mapTicketCreationDTOToTicket(
-                creationDTO, ticketToSave
-        );
-
-        Ticket savedTicket = ticketRepository.save(ticketToSave);
-        log.info("Ticket: " + savedTicket.getUuid() + " created");
-
+        Ticket savedTicket = ticketRepository.save(ticketMapper.mapTicketCreationDTOToTicket(creationDTO, ownerUuid.get()));
+        log.info("Ticket with uuid: [" + savedTicket.getUuid() + "] created");
         return savedTicket.getUuid();
     }
 
     @Override
-    public TicketDTO getById(UUID ticketUuid) {
-        AtomicReference<TicketDTO> ticketToRetrieve = new AtomicReference<>();
+    public TicketDto getById(UUID ticketUuid) {
+        Ticket fetchedTicket = ticketRepository.findByUuid(ticketUuid)
+                .orElseThrow(() -> new NotFoundException("No such tickets found"));
+        Event ticketEvent = eventRepository.findByUuid(fetchedTicket.getEventUuid())
+                .orElseThrow(() -> new InternalTicketStorageException("ticket with uuid: [" + fetchedTicket.getUuid() + "] related to non existing event with uuid: [" + fetchedTicket.getEventUuid() + "]"));
 
-        ticketRepository.findByUuid(ticketUuid).ifPresentOrElse(
-                ticket -> {
-                    //TODO check for existence of event
-                    Event event = eventRepository.findByUuid(ticket.getEventUuid()).get();
-                    ticketToRetrieve.set(
-                            ticketMapper.mapTicketAndEventToTicketDTO(ticket, event)
-                    );
-                },
-                () -> logAndThrowException(new NotFoundException("No such tickets found"))
-        );
-
-        return ticketToRetrieve.get();
-    }
-
-    @Override
-    public List<TicketDTO> listByOwner(UUID ownerUuid) {
-        List<Ticket> ownerTickets = ticketRepository.findAllByUserUuid(ownerUuid);
-        Map<UUID, Event> ownerTicketsEvents = eventRepository.findAllByUuidIn(
-                ownerTickets.stream()
-                        .map(Ticket::getEventUuid)
-                        .distinct()
-                        .toList()
-        ).stream().collect(
-                Collectors.toMap(
-                        Event::getUuid,
-                        event -> event
-                )
-        );
-
-        return ownerTickets.stream()
-                .map(ticket -> {
-                    Event event = ownerTicketsEvents.get(ticket.getEventUuid());
-                    return ticketMapper.mapTicketAndEventToTicketDTO(ticket, event);
-                })
-                .toList();
-    }
-
-    private void logAndThrowException(RuntimeException exception) {
-        log.error(exception.getMessage(), exception);
-        throw exception;
+        return ticketMapper.mapTicketAndEventToTicketDTO(fetchedTicket, ticketEvent);
     }
 }

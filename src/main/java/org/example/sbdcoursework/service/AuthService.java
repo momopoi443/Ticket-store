@@ -1,13 +1,13 @@
 package org.example.sbdcoursework.service;
 
-import org.example.sbdcoursework.dto.auth.CredentialsDTO;
-import org.example.sbdcoursework.dto.auth.LoginResponsePayload;
+import org.example.sbdcoursework.dto.auth.CredentialsDto;
+import org.example.sbdcoursework.dto.auth.LoginResponseDto;
 
 import java.util.UUID;
 
 public interface AuthService {
 
-    LoginResponsePayload login(CredentialsDTO credentials);
+    LoginResponseDto login(CredentialsDto credentials);
 
     String refresh(String refreshToken);
 

@@ -1,6 +1,13 @@
 package org.example.sbdcoursework.entity.event;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,26 +41,29 @@ public class Event {
     @Column(name = "city", nullable = false)
     private String city;
 
-    @Column(name = "cityAddress", nullable = false)
+    @Column(name = "city_address", nullable = false)
     private String cityAddress;
 
     @Column(name = "description", nullable = false, length = 300)
     private String description;
 
-    @Column(name = "organizerId", nullable = false)
+    @Column(name = "organizer_id", nullable = false)
     private UUID organizerId;
 
-    @Column(name = "imageName", nullable = false)
+    @Column(name = "image_name", nullable = false)
     private String imageFilename;
 
     @Column(name = "date", nullable = false)
     private LocalDateTime date;
 
-    @Column(name = "ticketPrice", nullable = false)
+    @Column(name = "ticket_price", nullable = false)
     private BigDecimal ticketPrice;
 
-    @Column(name = "maxTicketAmount", nullable = false)
+    @Column(name = "max_ticket_amount", nullable = false)
     private Long maxTicketAmount;
+
+    @Column(name = "is_confirmed", nullable = false)
+    private Boolean isConfirmed;
 
     public Event(UUID uuid) {
         this.uuid = uuid;

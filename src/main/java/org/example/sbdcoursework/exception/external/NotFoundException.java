@@ -1,4 +1,4 @@
-package org.example.sbdcoursework.exception;
+package org.example.sbdcoursework.exception.external;
 
 public class NotFoundException extends RuntimeException {
 

@@ -5,8 +5,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.sbdcoursework.entity.token.AccessToken;
 import org.example.sbdcoursework.entity.user.UserRole;
+import org.example.sbdcoursework.exception.external.InvalidTokenException;
 import org.example.sbdcoursework.service.JwtService;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +23,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final String AUTHZ_HEADER_PREFIX = "Bearer ";
@@ -34,32 +37,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String authzHeader = request.getHeader("Authorization");
-
         if (authzHeader == null || !authzHeader.startsWith(AUTHZ_HEADER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        AccessToken accessToken = jwtService.parseAccessToken(
-                authzHeader.substring(AUTHZ_HEADER_PREFIX.length())
-        );
-        authenticateIfCurrentlyNot(accessToken, request);
-
+        tryAuthenticateIfCurrentlyNot(authzHeader.substring(AUTHZ_HEADER_PREFIX.length()), request);
         filterChain.doFilter(request, response);
     }
 
-    private void authenticateIfCurrentlyNot(AccessToken accessToken, HttpServletRequest request) {
+    private void tryAuthenticateIfCurrentlyNot(String encodedToken, HttpServletRequest request) {
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                    accessToken.claims().sub(),
-                    null,
-                    List.of(convertRoleToSimpleGrantedAuthority(
-                            accessToken.claims().role()
-                    ))
-            );
-            token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            try {
+                AccessToken accessToken = jwtService.parseAccessToken(encodedToken);
+                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                        accessToken.claims().sub(),
+                        null,
+                        List.of(convertRoleToSimpleGrantedAuthority(accessToken.claims().role()))
+                );
+                token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            SecurityContextHolder.getContext().setAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(token);
+            } catch (InvalidTokenException e) {
+                log.error(e.getMessage(), e);
+            }
         }
     }
 

@@ -1,15 +1,13 @@
 package org.example.sbdcoursework.service;
 
-import org.example.sbdcoursework.dto.user.UserCreationDTO;
-import org.example.sbdcoursework.dto.user.UserDTO;
+import org.example.sbdcoursework.dto.user.UserCreationDto;
+import org.example.sbdcoursework.dto.user.UserDto;
 
 import java.util.UUID;
 
 public interface UserService {
 
-    UUID register(UserCreationDTO creationData);
+    UUID register(UserCreationDto creationDto);
 
-    UserDTO getById(UUID userUuid);
-
-    void delete(UUID userUuid);
+    UserDto getById(UUID userUuid);
 }

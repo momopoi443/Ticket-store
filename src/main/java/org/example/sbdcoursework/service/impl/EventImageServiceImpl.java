@@ -2,9 +2,9 @@ package org.example.sbdcoursework.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.sbdcoursework.config.image.ImageStorageProperties;
-import org.example.sbdcoursework.exception.InternalImageStorageException;
-import org.example.sbdcoursework.exception.InvalidArgumentException;
-import org.example.sbdcoursework.exception.NotFoundException;
+import org.example.sbdcoursework.exception.internal.InternalImageStorageException;
+import org.example.sbdcoursework.exception.external.InvalidArgumentException;
+import org.example.sbdcoursework.exception.external.NotFoundException;
 import org.example.sbdcoursework.service.EventImageService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -35,6 +35,10 @@ public class EventImageServiceImpl implements EventImageService {
 
     @Override
     public String store(UUID eventUuid, MultipartFile image) {
+        if (image.isEmpty()) {
+            throw new InvalidArgumentException("Can't store empty file");
+        }
+
         String imageFilename = eventUuid.toString() + "." + StringUtils.getFilenameExtension(image.getOriginalFilename());
         Path destinationPath = getImageLocation(imageFilename);
 
@@ -44,7 +48,7 @@ public class EventImageServiceImpl implements EventImageService {
         catch (IOException e) {
             throw new InternalImageStorageException(e);
         }
-        log.info("Event image: " + imageFilename + " saved");
+        log.info("Event image: [" + imageFilename + "] saved");
 
         return imageFilename;
     }
@@ -57,7 +61,7 @@ public class EventImageServiceImpl implements EventImageService {
             throw new InvalidArgumentException("Can't delete image outside current directory");
         }
         if (!imageLocation.toFile().exists()) {
-            throw new NotFoundException("Can't find image: " + imageFilename);
+            throw new NotFoundException("Can't find image: [" + imageFilename + "]");
         }
         if (imageLocation.toFile().isDirectory()) {
             throw new InvalidArgumentException("Given directory name not a image filename");
@@ -68,7 +72,7 @@ public class EventImageServiceImpl implements EventImageService {
         } catch (IOException e) {
             throw new InternalImageStorageException(e);
         }
-        log.info("Event image: " + imageFilename + " deleted");
+        log.info("Event image: [" + imageFilename + "] deleted");
     }
 
     @Override
@@ -83,10 +87,10 @@ public class EventImageServiceImpl implements EventImageService {
         }
 
         if (!resource.exists()) {
-            throw new NotFoundException("Can't find image: " + imageFilename);
+            throw new NotFoundException("Can't find image: [" + imageFilename + "]");
         }
         if (!resource.isReadable()) {
-            throw new InternalImageStorageException("Can't read file: " + imageFilename);
+            throw new InternalImageStorageException("Can't read file: [" + imageFilename + "]");
         }
 
         return resource;

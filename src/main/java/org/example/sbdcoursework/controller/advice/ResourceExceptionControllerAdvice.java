@@ -1,10 +1,11 @@
 package org.example.sbdcoursework.controller.advice;
 
-import org.example.sbdcoursework.dto.ApiErrorDTO;
-import org.example.sbdcoursework.exception.InternalEventStorageException;
-import org.example.sbdcoursework.exception.InternalImageStorageException;
-import org.example.sbdcoursework.exception.InvalidArgumentException;
-import org.example.sbdcoursework.exception.NotFoundException;
+import org.example.sbdcoursework.dto.ApiErrorDto;
+import org.example.sbdcoursework.exception.internal.InternalEventStorageException;
+import org.example.sbdcoursework.exception.internal.InternalImageStorageException;
+import org.example.sbdcoursework.exception.external.InvalidArgumentException;
+import org.example.sbdcoursework.exception.external.NotFoundException;
+import org.example.sbdcoursework.exception.internal.InternalTicketStorageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,40 +14,37 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ResourceExceptionControllerAdvice {
 
-    @ExceptionHandler({InvalidArgumentException.class})
-    public ResponseEntity<ApiErrorDTO> handleInvalidArguments(
-            InvalidArgumentException exception
-    ) {
-        ApiErrorDTO errorDTO = ApiErrorDTO.builder()
+    @ExceptionHandler(InvalidArgumentException.class)
+    public ResponseEntity<ApiErrorDto> handleInvalidArguments(InvalidArgumentException exception) {
+        ApiErrorDto apiErrorDto = ApiErrorDto.builder()
                 .code(InvalidArgumentException.errorCode())
                 .description(exception.getMessage())
                 .build();
 
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiErrorDto, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({NotFoundException.class})
-    public ResponseEntity<ApiErrorDTO> handleNotFound(
-            NotFoundException exception
-    ) {
-        ApiErrorDTO errorDTO = ApiErrorDTO.builder()
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiErrorDto> handleNotFound(NotFoundException exception) {
+        ApiErrorDto apiErrorDto = ApiErrorDto.builder()
                 .code(NotFoundException.errorCode())
                 .description(exception.getMessage())
                 .build();
 
-        return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiErrorDto, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({
             InternalEventStorageException.class,
-            InternalImageStorageException.class
+            InternalImageStorageException.class,
+            InternalTicketStorageException.class
     })
-    public ResponseEntity<ApiErrorDTO> handleInternalExceptions() {
-        ApiErrorDTO errorDTO = ApiErrorDTO.builder()
+    public ResponseEntity<ApiErrorDto> handleInternalExceptions() {
+        ApiErrorDto apiErrorDto = ApiErrorDto.builder()
                 .code("internal.server.error")
                 .description("Error occurred on behalf of server")
                 .build();
 
-        return new ResponseEntity<>(errorDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(apiErrorDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

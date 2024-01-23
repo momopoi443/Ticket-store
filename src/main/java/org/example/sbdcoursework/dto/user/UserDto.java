@@ -4,15 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.sbdcoursework.dto.ticket.TicketDto;
 import org.example.sbdcoursework.entity.user.UserRole;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
+public class UserDto {
 
     private UUID uuid;
 
@@ -24,10 +26,12 @@ public class UserDTO {
 
     private UserRole role;
 
+    private List<TicketDto> tickets;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof UserDTO userDTO)) return false;
+        if (!(o instanceof UserDto userDTO)) return false;
 
         return getUuid().equals(userDTO.getUuid());
     }

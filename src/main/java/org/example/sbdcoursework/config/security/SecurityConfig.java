@@ -14,18 +14,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static org.example.sbdcoursework.controller.AuthController.AUTH_PATH;
-import static org.example.sbdcoursework.controller.EventController.EVENT_PATH;
-import static org.example.sbdcoursework.controller.TicketController.TICKET_PATH;
-import static org.example.sbdcoursework.controller.UserController.USER_ID_PATH_VAR;
-import static org.example.sbdcoursework.controller.UserController.USER_PATH;
+import static org.springframework.security.web.util.matcher.RegexRequestMatcher.regexMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -39,18 +36,25 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
+        return http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(USER_PATH + USER_ID_PATH_VAR).authenticated()
-                        .requestMatchers(HttpMethod.POST, EVENT_PATH).hasRole("ORGANIZER")
-                        .requestMatchers(HttpMethod.GET, TICKET_PATH).authenticated()
-                        .requestMatchers(AUTH_PATH + "/logout/{userUuid}").authenticated()
+                        .requestMatchers("/api/user/{userId}")
+                            .access(new WebExpressionAuthorizationManager("#userId == authentication.principal.toString()"))
+                        .requestMatchers(HttpMethod.POST, "/api/event")
+                                .access(new WebExpressionAuthorizationManager("hasRole('ORGANIZER') and (new String(request.getPart('organizerId').getInputStream().readAllBytes()) == authentication.principal.toString())"))
+//                            .access(new WebExpressionAuthorizationManager("hasRole('ORGANIZER') and (#httpServletRequest.getParameter('organizerId') == authentication.principal.toString())"))
+                        .requestMatchers("/api/auth/logout/{userId}")
+                            .access(new WebExpressionAuthorizationManager("#userId == authentication.principal.toString()"))
+                        .requestMatchers(regexMatcher("^/api/event\\?(?=.*\\borganizerId=[^&]+\\b)(?=.*\\bisConfirmed=false\\b).*"))
+                            .access(new WebExpressionAuthorizationManager("hasRole('ADMIN') or (hasRole('ORGANIZER') and request.getParameter('organizerId') == authentication.principal.toString())"))
+                        .requestMatchers(regexMatcher("^/api/event\\?(?=.*\\bisConfirmed=false\\b).*$")).hasRole("ADMIN")
+                        .requestMatchers("/api/event/{eventId}/confirm").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtAuthFilter, AuthorizationFilter.class)
+                .addFilterBefore(jwtAuthFilter, AnonymousAuthenticationFilter.class)
                 .cors(Customizer.withDefaults())
                 .exceptionHandling(handler -> handler
                         .authenticationEntryPoint(jwtFilterAuthenticationEntryPoint)
@@ -61,10 +65,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .rememberMe(AbstractHttpConfigurer::disable)
-                .anonymous(AbstractHttpConfigurer::disable)
-        ;
-
-        return http.build();
+                .build();
     }
 
     @Bean

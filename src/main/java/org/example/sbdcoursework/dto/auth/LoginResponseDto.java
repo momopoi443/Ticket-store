@@ -4,15 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.sbdcoursework.dto.user.UserDTO;
+import org.example.sbdcoursework.dto.user.UserDto;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponsePayload {
+public class LoginResponseDto {
 
-    private UserDTO userDTO;
+    private UserDto userDTO;
 
     private TokenPair tokenPair;
 }

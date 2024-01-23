@@ -29,4 +29,8 @@ public class EventSpecifications {
     public static Specification<Event> hasOrganizerId(UUID organizerId) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("organizerId"), organizerId);
     }
+
+    public static Specification<Event> isConfirmed(Boolean isConfirmed) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isConfirmed"), isConfirmed);
+    }
 }

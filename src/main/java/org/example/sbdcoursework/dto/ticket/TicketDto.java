@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TicketDTO {
+public class TicketDto {
 
     private UUID uuid;
 
@@ -39,7 +39,7 @@ public class TicketDTO {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TicketDTO ticketDTO)) return false;
+        if (!(o instanceof TicketDto ticketDTO)) return false;
 
         return getUuid().equals(ticketDTO.getUuid());
     }
