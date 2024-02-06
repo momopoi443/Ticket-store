@@ -8,11 +8,11 @@
         <version>3.2.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>org.example</groupId>
-    <artifactId>SBD-course-work</artifactId>
+    <groupId>ticket.store</groupId>
+    <artifactId>backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>SBD-course-work</name>
-    <description>SBD-course-work</description>
+    <name>ticket-store-backend</name>
+    <description>Databases course-work project</description>
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -42,6 +42,10 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
