@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  ticket-store-backend:
+    image: ticket-store-backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ticket-store-postgres
+      - ticket-store-mongodb
+      - ticket-store-redis
+    env_file:
+      - .env
+    networks:
+      - ticket-store-backend-network
+
+  ticket-store-postgres:
+    image: postgres:latest
+    env_file:
+      - .env
+    networks:
+      - ticket-store-backend-network
+
+  ticket-store-mongodb:
+    image: mongodb/mongodb-community-server:latest
+    env_file:
+      - .env
+    networks:
+      - ticket-store-backend-network
+
+  ticket-store-redis:
+    image: redis:latest
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - ticket-store-backend-network
+
+networks:
+  ticket-store-backend-network:
+    driver: bridge
